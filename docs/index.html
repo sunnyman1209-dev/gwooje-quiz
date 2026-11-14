@@ -121,7 +121,8 @@ main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-
 <script>
 "use strict";
 const CIRC="①②③④⑤⑥", PAIR="㉠㉡㉢㉣㉤㉥", KEY="gwq1";
-let DB=null, BYID={}, Q=null, S=null, view={};
+let DB=null, BYID={}, Q=null, S=null, view={}, autoNext=0, navLock=false;
+function clearAuto(){if(autoNext){clearTimeout(autoNext);autoNext=0}}
 
 /* ---------- 저장 ---------- */
 function load(){let s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
@@ -164,16 +165,23 @@ function scopeName(sc=S.scope){
 /* ---------- 출제 ---------- */
 function pick(){
   const seen=new Set(S.seen);
-  // 다시 낼 틀린 문항
+  // 다시 낼 틀린 문항 (due 도달 + 현재 범위 안)
   const due=S.retry.filter(r=>r.due<=S.count&&BYID[r.id]&&inScope(BYID[r.id]));
   if(due.length){const r=due[0];S.retry=S.retry.filter(x=>x!==r);return {id:r.id,re:true}}
   const left=pool().filter(q=>!seen.has(q.id));
-  if(!left.length)return null;
-  return {id:left[shuffleIdx(left.length)].id,re:false}}
+  if(left.length)return {id:left[shuffleIdx(left.length)].id,re:false};
+  // 새 문항이 없으면 범위 안 재출제를 당겨서 낸다(소범위·오답만에서 due 전에 한 바퀴가 끝나는 경우)
+  const pending=S.retry.filter(r=>BYID[r.id]&&inScope(BYID[r.id])).sort((a,b)=>a.due-b.due);
+  if(pending.length){const r=pending[0];S.retry=S.retry.filter(x=>x!==r);return {id:r.id,re:true}}
+  return null}
 function next(){
-  S.cur=pick();save();
-  if(!S.cur){renderDone();return}
-  show()}
+  clearAuto();
+  if(navLock)return;navLock=true;
+  try{
+    S.cur=pick();save();
+    if(!S.cur){renderDone();return}
+    show();
+  }finally{navLock=false}}
 function header(){
   const P=pool(),seen=new Set(S.seen),n=P.filter(q=>seen.has(q.id)).length;
   $("scopeName").textContent=scopeName();
@@ -245,15 +253,16 @@ function gradeCalc(v){
   const tol=Math.max(Math.abs(Q.value)*0.01,1e-9);
   const ok=!isNaN(num)&&Math.abs(num-Q.value)<=tol;finish(ok?"o":"x",{mine:v+(Q.unit?" "+Q.unit:""),canOverride:!ok})}
 function revealSelf(){
+  if(view.revealed)return;
   view.answered=true;view.revealed=true;const mine=$("in").value.trim();$("in").disabled=true;
   const kw=Q.keywords||[];
   let h=`<div class="ex"><h4>정답</h4><div class="ans">${md(Q.ansText)}</div>`;
-  if(Q.ex.모범답안)h+=`<h4>모범 답안</h4>${md(Q.ex.모범답안)}`;
+  if(Q.ex&&Q.ex.모범답안)h+=`<h4>모범 답안</h4>${md(Q.ex.모범답안)}`;
   if(kw.length)h+=`<h4>핵심어 — 내 답에 들어간 것을 체크하세요</h4><div class="kw">${kw.map((k,i)=>`<label><input type="checkbox" data-i="${i}"><span>${inline(k)}</span></label>`).join("")}</div>`;
   h+="</div>";$("fb").innerHTML=h;
-  const decide=g=>()=>finish(g);
+  const decide=g=>()=>{if(view.done)return;finish(g)};
   if(kw.length){
-    const upd=()=>{const c=$("fb").querySelectorAll(".kw input:checked").length;
+    const upd=()=>{if(view.done)return;const c=$("fb").querySelectorAll(".kw input:checked").length;
       const g=c===kw.length?"o":c*2>=kw.length?"m":"x";
       setAct([{t:g==="o"?"○ 맞음":g==="m"?"△ 일부 맞음":"× 틀림",f:decide(g)}])};
     $("fb").querySelectorAll(".kw input").forEach(x=>x.onchange=upd);upd();
@@ -261,14 +270,19 @@ function revealSelf(){
   view.mine=mine}
 
 function finish(g,opt={}){
+  if(view.done||!S.cur)return;view.done=true;
   S.count++;
   const id=Q.id;
   if(!S.cur.re&&!S.seen.includes(id))S.seen.push(id);
   S.res[id]=g;
   S.retry=S.retry.filter(r=>r.id!==id);
   if(g!=="o")S.retry.push({id,due:S.count+10+Math.floor(Math.random()*11)});
-  S.cur=null;save();header();
-  if(g==="o"&&!opt.canOverride){toast();setTimeout(next,800);return}
+  // S.cur는 next()까지 유지 → 해설 화면에서 나갔다 와도 같은 문항부터
+  save();header();
+  if(g==="o"&&!opt.canOverride){
+    setAct([]);
+    document.querySelectorAll("#fb .kw input").forEach(i=>i.disabled=true);
+    toast();autoNext=setTimeout(next,800);return}
   renderFeedback(g,opt)}
 function toast(){const t=$("toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),650)}
 
@@ -293,8 +307,9 @@ function renderFeedback(g,opt){
   const fb=$("fb");
   if(view.revealed){fb.querySelectorAll(".kw input").forEach(i=>i.disabled=true);fb.insertAdjacentHTML("afterbegin",h)}
   else fb.innerHTML=h;
-  const acts=[{t:"다음 문제",f:next}];
-  if(opt.canOverride)acts.unshift({t:"내 답도 맞음",g:1,f:()=>{S.res[Q.id]="o";S.retry=S.retry.filter(r=>r.id!==Q.id);save();next()}});
+  const goNext=()=>{if(view.moved)return;view.moved=true;next()};
+  const acts=[{t:"다음 문제",f:goNext}];
+  if(opt.canOverride)acts.unshift({t:"내 답도 맞음",g:1,f:()=>{if(view.moved)return;view.moved=true;S.res[Q.id]="o";S.retry=S.retry.filter(r=>r.id!==Q.id);save();next()}});
   setAct(acts);
   fb.querySelector(".verdict")?.scrollIntoView({behavior:"smooth",block:"start"})}
 
@@ -312,22 +327,24 @@ function renderDone(){
 
 /* ---------- 범위 고르기 ---------- */
 function setScope(sc){
+  clearAuto();
   S.scope=sc;S.cur=null;
   if(sc.k==="wrong"){const ids=new Set(DB.questions.filter(q=>inScope(q,sc)).map(q=>q.id));S.seen=S.seen.filter(i=>!ids.has(i))}
   closeSheet();next()}
 function openSheet(){
   const cnt=sc=>DB.questions.filter(q=>inScope(q,sc)).length;
   const b=(sc,label)=>{const n=cnt(sc);const on=JSON.stringify(sc)===JSON.stringify(S.scope);
-    return `<button class="${on?"sel":""}" data-sc='${esc(JSON.stringify(sc))}' ${n?"":"disabled"}>${esc(label)}<small>${n}문항</small></button>`};
+    return `<button type="button" class="${on?"sel":""}" data-sc='${esc(JSON.stringify(sc))}' ${n?"":"disabled"}>${esc(label)}<small>${n}문항</small></button>`};
   let h=`<h3>전체</h3><div class="grid">${b({k:"all"},"전체")}${b({k:"wrong"},"오답만")}</div>`;
   h+=`<h3>묶음</h3><div class="grid">${["기출","모의","예상","실기"].map(g=>b({k:"group",v:g},g+" 전체")).join("")}</div>`;
   h+=`<h3>회차·파트</h3><div class="grid">${DB.parts.map(p=>b({k:"part",v:p.id},p.title)).join("")}</div>`;
   h+=`<h3>유형</h3><div class="grid">${TYPES.map(t=>b({k:"type",v:t},t)).join("")}</div>`;
-  $("sheet").innerHTML=h;
+  $("sheet").innerHTML=h;$("sheet").setAttribute("role","dialog");$("sheet").setAttribute("aria-label","출제 범위");
   $("sheet").querySelectorAll("button[data-sc]").forEach(x=>x.onclick=()=>setScope(JSON.parse(x.dataset.sc)));
   $("sheet").classList.add("on");$("sheetBg").classList.add("on")}
 function closeSheet(){$("sheet").classList.remove("on");$("sheetBg").classList.remove("on")}
 function resetAll(){if(!confirm("푼 기록과 오답을 모두 지울까요?"))return;
+  clearAuto();
   S=load();S.seen=[];S.res={};S.retry=[];S.count=0;S.cur=null;S.scope={k:"all"};save();next()}
 
 /* ---------- 시작 ---------- */
