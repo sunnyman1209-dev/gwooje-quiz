@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1f6feb">
+<title>기우제반 퀴즈</title>
+<style>
+:root{
+  --bg:#f5f6f8;--card:#fff;--ink:#1c1f24;--sub:#5d6670;--line:#dfe3e8;
+  --pri:#1f6feb;--pri-ink:#fff;--ok:#1a7f37;--ok-bg:#e7f6ec;--no:#cf222e;--no-bg:#fdecee;
+  --mid:#9a6700;--mid-bg:#fff4d6;--chip:#eef1f5;--box:#f1f5fb;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1216;--card:#191d23;--ink:#e6e9ee;--sub:#9aa4af;--line:#2c323a;
+  --pri:#4c8dff;--pri-ink:#fff;--ok:#3fb950;--ok-bg:#12291a;--no:#ff6b6b;--no-bg:#331619;
+  --mid:#e3b341;--mid-bg:#2e2510;--chip:#232830;--box:#1b2330;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-size:17px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+button{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 6px;
+  padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
+.scope{flex:1;min-width:0;display:flex;align-items:center;gap:6px;border:1px solid var(--line);
+  background:var(--card);border-radius:999px;padding:7px 14px;font-size:15px;text-align:left;cursor:pointer}
+.scope b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scope span{color:var(--sub);margin-left:auto;white-space:nowrap}
+.bar{height:4px;background:var(--line);margin:0 16px;border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri);width:0;transition:width .3s}
+main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;color:var(--sub)}
+.meta span{background:var(--chip);border-radius:6px;padding:2px 8px}
+.meta .re{background:var(--mid-bg);color:var(--mid)}
+.stem{font-size:18px;font-weight:600;white-space:normal}
+.stem table,.md table{border-collapse:collapse;margin:8px 0;font-size:15px;font-weight:400;width:100%}
+.stem td,.stem th,.md td,.md th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
+.fig{display:block;max-width:100%;margin:12px auto 0;border-radius:8px;background:#fff}
+.figcap{text-align:center;font-size:12px;color:var(--sub);margin-top:4px}
+.ox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.ox button{font-size:30px;font-weight:700;padding:18px 0}
+.opt{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.btn{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:13px 14px;text-align:left;cursor:pointer;
+  display:flex;gap:10px;align-items:flex-start;width:100%}
+.btn .n{font-weight:700;color:var(--sub);flex:none}
+.btn:active{transform:scale(.99)}
+.btn.ok{border-color:var(--ok);background:var(--ok-bg)}
+.btn.no{border-color:var(--no);background:var(--no-bg)}
+.btn.sel{border-color:var(--pri)}
+.btn[disabled]{cursor:default}
+.ox .btn{justify-content:center}
+.right-list{margin:14px 0 4px;padding:10px 12px;background:var(--box);border-radius:10px;font-size:15px}
+.right-list div{display:flex;gap:6px}
+.match-row{border-top:1px solid var(--line);padding:10px 0}
+.match-row:first-child{border-top:0}
+.match-row .l{font-weight:600;margin-bottom:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{min-width:46px;padding:8px 0;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-size:18px;cursor:pointer}
+.chips button.sel{border-color:var(--pri);background:var(--pri);color:var(--pri-ink)}
+.chips button.ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.chips button.no{border-color:var(--no);background:var(--no-bg);color:var(--no)}
+.inp{display:flex;gap:8px;margin-top:16px;align-items:center}
+.inp input,.inp textarea{flex:1;min-width:0;font:inherit;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.inp textarea{min-height:90px;resize:vertical}
+.inp .unit{color:var(--sub);white-space:nowrap}
+.act{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(transparent,var(--bg) 30%);display:flex;justify-content:center;gap:8px;z-index:4}
+.act button{max-width:608px;flex:1;border:0;border-radius:14px;padding:15px;font-size:17px;font-weight:700;background:var(--pri);color:var(--pri-ink);cursor:pointer}
+.act button.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);flex:0 1 auto;padding:15px 16px}
+.act button[disabled]{opacity:.4}
+.verdict{margin-top:16px;padding:12px 14px;border-radius:12px;font-weight:700;display:flex;gap:8px;align-items:center}
+.verdict.ok{background:var(--ok-bg);color:var(--ok)}
+.verdict.no{background:var(--no-bg);color:var(--no)}
+.verdict.mid{background:var(--mid-bg);color:var(--mid)}
+.ex{margin-top:14px;font-size:16px}
+.ex h4{margin:14px 0 4px;font-size:14px;color:var(--sub)}
+.ex ul,.ex ol{margin:4px 0;padding-left:22px}
+.ex li{margin:3px 0}
+.ans{font-size:18px;font-weight:700}
+.concept{margin-top:14px;background:var(--box);border-radius:12px;padding:12px 14px;font-size:15px}
+.concept b.t{display:block;margin-bottom:4px;font-size:15px}
+.kw{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.kw label{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer}
+.kw input{width:22px;height:22px;accent-color:var(--pri)}
+.mine{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:15px;white-space:pre-wrap}
+.link{background:none;border:0;color:var(--pri);padding:8px 0;cursor:pointer;font-weight:600}
+.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.9);background:var(--ok);color:#fff;
+  font-size:24px;font-weight:800;padding:16px 30px;border-radius:18px;opacity:0;pointer-events:none;transition:all .15s}
+.toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:85vh;overflow:auto;background:var(--card);z-index:11;
+  border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));display:none}
+.sheet.on,.sheet-bg.on{display:block}
+.sheet h3{margin:14px 0 8px;font-size:14px;color:var(--sub)}
+.sheet h3:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.grid button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:10px;text-align:left;cursor:pointer;font-size:15px}
+.grid button small{display:block;color:var(--sub);font-size:12px}
+.grid button.sel{border-color:var(--pri);background:var(--box)}
+.done{text-align:center;padding:30px 10px}
+.done .big{font-size:44px}
+.stats{display:flex;justify-content:center;gap:24px;margin:16px 0;font-size:15px;color:var(--sub)}
+.stats b{display:block;font-size:26px;color:var(--ink)}
+.foot{margin-top:28px;text-align:center;font-size:12px;color:var(--sub)}
+.foot button{background:none;border:0;color:var(--sub);text-decoration:underline;cursor:pointer;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <button class="scope" id="scopeBtn" aria-label="출제 범위 바꾸기"><b id="scopeName">전체</b><span id="prog"></span></button>
+</header>
+<div class="bar"><i id="barFill"></i></div>
+<main id="main"><div class="card">불러오는 중…</div></main>
+<div class="act" id="act"></div>
+<div class="toast" id="toast">정답!</div>
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"></div>
+<script>
+"use strict";
+const CIRC="①②③④⑤⑥", PAIR="㉠㉡㉢㉣㉤㉥", KEY="gwq1";
+let DB=null, BYID={}, Q=null, S=null, view={};
+
+/* ---------- 저장 ---------- */
+function load(){let s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  return Object.assign({scope:{k:"all"},seen:[],res:{},retry:[],count:0,cur:null,round:1},s||{})}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ---------- 도구 ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function inline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}
+function md(text){ // 줄 단위: 표, 목록, 문단
+  const lines=Array.isArray(text)?text:String(text||"").split("\n");let h="",i=0;
+  while(i<lines.length){const L=lines[i];
+    if(/^\s*\|/.test(L)){let rows=[];while(i<lines.length&&/^\s*\|/.test(lines[i])){rows.push(lines[i]);i++}
+      rows=rows.filter(r=>!/^\s*\|[\s:|-]+\|\s*$/.test(r));
+      h+="<table>"+rows.map((r,ri)=>"<tr>"+r.trim().replace(/^\||\|$/g,"").split("|").map(c=>`<${ri?"td":"th"}>${inline(c.trim())}</${ri?"td":"th"}>`).join("")+"</tr>").join("")+"</table>";continue}
+    if(/^\s*-\s+/.test(L)){let it=[];while(i<lines.length&&/^\s*-\s+/.test(lines[i])){it.push(lines[i].replace(/^\s*-\s+/,""));i++}
+      h+="<ul>"+it.map(x=>`<li>${inline(x)}</li>`).join("")+"</ul>";continue}
+    if(L.trim())h+=`<div>${inline(L)}</div>`;i++}
+  return h}
+const norm=s=>String(s||"").toLowerCase().normalize("NFC").replace(/\([^)]*\)/g,"").replace(/[\s·,.\-_'"“”‘’()（）\[\]]/g,"");
+function shuffleIdx(n){return Math.floor(Math.random()*n)}
+const TYPES=["진위형","4지선다","연결형","단답형","계산형","서술형"];
+
+/* ---------- 범위 ---------- */
+function inScope(q,sc=S.scope){
+  if(sc.k==="part")return q.p===sc.v;
+  if(sc.k==="group")return DB.parts.find(p=>p.id===q.p).group===sc.v;
+  if(sc.k==="type")return q.t===sc.v;
+  if(sc.k==="wrong")return S.res[q.id]&&S.res[q.id]!=="o";
+  return true}
+function pool(){return DB.questions.filter(q=>inScope(q))}
+function scopeName(sc=S.scope){
+  if(sc.k==="part")return DB.parts.find(p=>p.id===sc.v).title;
+  if(sc.k==="group")return sc.v+" 전체";
+  if(sc.k==="type")return sc.v;
+  if(sc.k==="wrong")return "오답만";
+  return "전체"}
+
+/* ---------- 출제 ---------- */
+function pick(){
+  const seen=new Set(S.seen);
+  // 다시 낼 틀린 문항
+  const due=S.retry.filter(r=>r.due<=S.count&&BYID[r.id]&&inScope(BYID[r.id]));
+  if(due.length){const r=due[0];S.retry=S.retry.filter(x=>x!==r);return {id:r.id,re:true}}
+  const left=pool().filter(q=>!seen.has(q.id));
+  if(!left.length)return null;
+  return {id:left[shuffleIdx(left.length)].id,re:false}}
+function next(){
+  S.cur=pick();save();
+  if(!S.cur){renderDone();return}
+  show()}
+function header(){
+  const P=pool(),seen=new Set(S.seen),n=P.filter(q=>seen.has(q.id)).length;
+  $("scopeName").textContent=scopeName();
+  $("prog").textContent=`${S.scope.k==="wrong"?"남은 "+P.filter(q=>!seen.has(q.id)).length:n+" / "+P.length}`;
+  $("barFill").style.width=(P.length?(S.scope.k==="wrong"?0:n/P.length*100):0)+"%"}
+
+/* ---------- 문항 화면 ---------- */
+function show(){
+  Q=BYID[S.cur.id];view={answered:false,sel:null,match:[]};header();
+  const part=DB.parts.find(p=>p.id===Q.p);
+  let h=`<div class="card"><div class="meta"><span>${esc(part.title)}</span><span>${esc(Q.t)}</span>${S.cur.re?'<span class="re">다시 풀기</span>':""}</div>`;
+  h+=`<div class="stem">${md(Q.stem)}</div>`;
+  if(Q.fig)h+=`<a href="${esc(Q.fig)}" target="_blank" rel="noopener"><img class="fig" src="${esc(Q.fig)}" alt="원본 문항 그림"></a><div class="figcap">원본 문항 · 누르면 크게 보기</div>`;
+  h+=`<div id="ui"></div><div id="fb"></div></div>`;
+  h+=`<div class="foot">문항 ${esc(Q.id.replace("|"," "))} · <button id="resetBtn">기록 지우기</button></div>`;
+  $("main").innerHTML=h;$("resetBtn").onclick=resetAll;
+  window.scrollTo(0,0);
+  const ui=$("ui");setAct([]);
+  if(Q.t==="진위형"){
+    ui.innerHTML=`<div class="ox"><button class="btn" data-v="O">O</button><button class="btn" data-v="X">X</button></div>`;
+    ui.querySelectorAll("button").forEach(b=>b.onclick=()=>gradeChoice(b.dataset.v===Q.ans,b,ui.querySelector(`[data-v="${Q.ans}"]`)));
+  }else if(Q.t==="4지선다"&&Q.choices){
+    ui.innerHTML=`<div class="opt">${Q.choices.map((c,i)=>`<button class="btn" data-i="${i}"><span class="n">${CIRC[i]}</span><span>${inline(c)}</span></button>`).join("")}</div>`;
+    ui.querySelectorAll("button").forEach(b=>b.onclick=()=>gradeChoice(+b.dataset.i===Q.ans,b,ui.querySelector(`[data-i="${Q.ans}"]`)));
+  }else if(Q.t==="연결형"&&Q.left&&Q.right){
+    const n=Q.right.length;
+    ui.innerHTML=`<div class="right-list">${Q.right.map((r,i)=>`<div><b>${PAIR[i]}</b><span>${inline(r)}</span></div>`).join("")}</div>`+
+      Q.left.map((l,i)=>`<div class="match-row"><div class="l">${CIRC[i]} ${inline(l)}</div><div class="chips" data-row="${i}">${
+        Array.from({length:n},(_,j)=>`<button data-j="${j}">${PAIR[j]}</button>`).join("")}</div></div>`).join("");
+    ui.querySelectorAll(".chips").forEach(row=>row.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+      if(view.answered)return;const r=+row.dataset.row;view.match[r]=+b.dataset.j;
+      row.querySelectorAll("button").forEach(x=>x.classList.toggle("sel",x===b));
+      setAct([{t:"제출",d:Q.left.some((_,k)=>view.match[k]==null),f:gradeMatch}])}));
+    setAct([{t:"제출",d:true,f:gradeMatch}]);
+  }else if(Q.t==="계산형"&&Q.value!=null){
+    ui.innerHTML=`<div class="inp"><input id="in" inputmode="decimal" autocomplete="off" placeholder="답(숫자)">${Q.unit?`<span class="unit">${esc(Q.unit)}</span>`:""}</div>`;
+    inputAct(gradeCalc);
+  }else if(Q.t==="단답형"&&Q.accept){
+    ui.innerHTML=`<div class="inp"><input id="in" autocomplete="off" autocapitalize="off" placeholder="답 입력"></div>`;
+    inputAct(gradeShort);
+  }else{ // 스스로 채점
+    ui.innerHTML=`<div class="inp"><textarea id="in" placeholder="답을 적어 보세요 (안 적어도 됩니다)"></textarea></div>`;
+    setAct([{t:"답 확인",f:revealSelf}]);
+  }}
+function inputAct(f){const el=$("in");const go=()=>{if(el.value.trim())f(el.value.trim())};
+  el.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();go()}};
+  setAct([{t:"제출",f:go}])}
+function setAct(list){const a=$("act");a.innerHTML="";
+  list.forEach(o=>{const b=document.createElement("button");b.textContent=o.t;if(o.g)b.className="ghost";b.disabled=!!o.d;b.onclick=o.f;a.appendChild(b)})}
+
+/* ---------- 채점 ---------- */
+function gradeChoice(ok,btn,right){
+  if(view.answered)return;view.answered=true;
+  $("ui").querySelectorAll("button").forEach(b=>b.disabled=true);
+  btn.classList.add(ok?"ok":"no");if(!ok&&right)right.classList.add("ok");
+  finish(ok?"o":"x")}
+function gradeMatch(){
+  if(view.answered)return;view.answered=true;let all=true;
+  $("ui").querySelectorAll(".chips").forEach(row=>{const r=+row.dataset.row,good=Q.ans[r];
+    row.querySelectorAll("button").forEach(b=>{const j=+b.dataset.j;b.classList.remove("sel");
+      if(j===good)b.classList.add("ok");else if(j===view.match[r]){b.classList.add("no");all=false}})});
+  finish(all?"o":"x")}
+function gradeShort(v){
+  if(view.answered)return;view.answered=true;$("in").disabled=true;
+  const ok=Q.accept.some(a=>norm(a)===norm(v)&&norm(v));finish(ok?"o":"x",{mine:v,canOverride:!ok})}
+function gradeCalc(v){
+  if(view.answered)return;view.answered=true;$("in").disabled=true;
+  const num=parseFloat(v.replace(/,/g,"").replace(/[^0-9.\-eE]/g," ").trim().split(/\s+/)[0]);
+  const tol=Math.max(Math.abs(Q.value)*0.01,1e-9);
+  const ok=!isNaN(num)&&Math.abs(num-Q.value)<=tol;finish(ok?"o":"x",{mine:v+(Q.unit?" "+Q.unit:""),canOverride:!ok})}
+function revealSelf(){
+  view.answered=true;view.revealed=true;const mine=$("in").value.trim();$("in").disabled=true;
+  const kw=Q.keywords||[];
+  let h=`<div class="ex"><h4>정답</h4><div class="ans">${md(Q.ansText)}</div>`;
+  if(Q.ex.모범답안)h+=`<h4>모범 답안</h4>${md(Q.ex.모범답안)}`;
+  if(kw.length)h+=`<h4>핵심어 — 내 답에 들어간 것을 체크하세요</h4><div class="kw">${kw.map((k,i)=>`<label><input type="checkbox" data-i="${i}"><span>${inline(k)}</span></label>`).join("")}</div>`;
+  h+="</div>";$("fb").innerHTML=h;
+  const decide=g=>()=>finish(g);
+  if(kw.length){
+    const upd=()=>{const c=$("fb").querySelectorAll(".kw input:checked").length;
+      const g=c===kw.length?"o":c*2>=kw.length?"m":"x";
+      setAct([{t:g==="o"?"○ 맞음":g==="m"?"△ 일부 맞음":"× 틀림",f:decide(g)}])};
+    $("fb").querySelectorAll(".kw input").forEach(x=>x.onchange=upd);upd();
+  }else setAct([{t:"○",f:decide("o")},{t:"△",f:decide("m")},{t:"×",f:decide("x")}]);
+  view.mine=mine}
+
+function finish(g,opt={}){
+  S.count++;
+  const id=Q.id;
+  if(!S.cur.re&&!S.seen.includes(id))S.seen.push(id);
+  S.res[id]=g;
+  S.retry=S.retry.filter(r=>r.id!==id);
+  if(g!=="o")S.retry.push({id,due:S.count+10+Math.floor(Math.random()*11)});
+  S.cur=null;save();header();
+  if(g==="o"&&!opt.canOverride){toast();setTimeout(next,800);return}
+  renderFeedback(g,opt)}
+function toast(){const t=$("toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),650)}
+
+function renderFeedback(g,opt){
+  const x=Q.ex||{};
+  let h=`<div class="verdict ${g==="o"?"ok":g==="m"?"mid":"no"}">${g==="o"?"정답":g==="m"?"△ 일부 맞음":"오답"}</div>`;
+  if(opt.mine)h+=`<div class="mine">내 답: ${esc(opt.mine)}</div>`;
+  if(view.mine)h+=`<div class="mine">내 답: ${esc(view.mine)}</div>`;
+  h+=`<div class="ex">`;
+  if(!view.revealed)h+=`<h4>정답</h4><div class="ans">${md(Q.ansText)}</div>`;
+  if(x.근거)h+=`<h4>근거</h4>${md(x.근거)}`;
+  if(x.고친문장)h+=`<h4>맞게 고친 문장</h4>${md(x.고친문장)}`;
+  if(x.짝)h+=`<h4>짝 이유</h4><ul>${x.짝.map(s=>`<li>${inline(s)}</li>`).join("")}</ul>`;
+  if(x.오답)h+=`<h4>다른 보기는 왜 아닌가</h4><ul>${x.오답.map(s=>`<li>${inline(s)}</li>`).join("")}</ul>`;
+  if(x.계산)h+=`<h4>계산</h4><ol>${x.계산.map(s=>`<li>${inline(s)}</li>`).join("")}</ol>`;
+  if(x.정의)h+=`<h4>정의</h4>${md(x.정의)}`;
+  if(x.비슷한말)h+=`<h4>헷갈리는 말</h4>${md(x.비슷한말)}`;
+  if(x.모범답안&&Q.t!=="서술형")h+=`<h4>모범 답안</h4>${md(x.모범답안)}`;
+  if(x.보충)h+=`<h4>보충</h4>${md(x.보충)}`;
+  h+=`</div>`;
+  if(x.개념)h+=`<div class="concept md"><b class="t">개념 · ${inline(x.개념.title)}</b>${md(x.개념.body)}</div>`;
+  const fb=$("fb");
+  if(view.revealed){fb.querySelectorAll(".kw input").forEach(i=>i.disabled=true);fb.insertAdjacentHTML("afterbegin",h)}
+  else fb.innerHTML=h;
+  const acts=[{t:"다음 문제",f:next}];
+  if(opt.canOverride)acts.unshift({t:"내 답도 맞음",g:1,f:()=>{S.res[Q.id]="o";S.retry=S.retry.filter(r=>r.id!==Q.id);save();next()}});
+  setAct(acts);
+  fb.querySelector(".verdict")?.scrollIntoView({behavior:"smooth",block:"start"})}
+
+/* ---------- 한 바퀴 완료 ---------- */
+function renderDone(){
+  header();const P=pool(),o=P.filter(q=>S.res[q.id]==="o").length;
+  const wrong=DB.questions.filter(q=>S.res[q.id]&&S.res[q.id]!=="o").length;
+  $("main").innerHTML=S.scope.k==="wrong"?`<div class="card done"><div class="big">🎉</div><h2>오답을 모두 다시 풀었습니다</h2><p>남은 오답 ${wrong}문항</p></div>`:
+    `<div class="card done"><div class="big">🎉</div><h2>${esc(scopeName())} 한 바퀴 완료</h2>
+    <div class="stats"><div><b>${P.length}</b>문항</div><div><b>${o}</b>맞음</div><div><b>${P.length-o}</b>틀림·△</div></div></div>`;
+  const acts=[{t:"다시 한 바퀴",f:()=>{const ids=new Set(P.map(q=>q.id));S.seen=S.seen.filter(i=>!ids.has(i));S.round++;save();next()}}];
+  if(wrong&&S.scope.k!=="wrong")acts.push({t:`오답만 (${wrong})`,g:1,f:()=>setScope({k:"wrong"})});
+  if(S.scope.k==="wrong")acts[0]={t:"전체로 돌아가기",f:()=>setScope({k:"all"})};
+  setAct(acts)}
+
+/* ---------- 범위 고르기 ---------- */
+function setScope(sc){
+  S.scope=sc;S.cur=null;
+  if(sc.k==="wrong"){const ids=new Set(DB.questions.filter(q=>inScope(q,sc)).map(q=>q.id));S.seen=S.seen.filter(i=>!ids.has(i))}
+  closeSheet();next()}
+function openSheet(){
+  const cnt=sc=>DB.questions.filter(q=>inScope(q,sc)).length;
+  const b=(sc,label)=>{const n=cnt(sc);const on=JSON.stringify(sc)===JSON.stringify(S.scope);
+    return `<button class="${on?"sel":""}" data-sc='${esc(JSON.stringify(sc))}' ${n?"":"disabled"}>${esc(label)}<small>${n}문항</small></button>`};
+  let h=`<h3>전체</h3><div class="grid">${b({k:"all"},"전체")}${b({k:"wrong"},"오답만")}</div>`;
+  h+=`<h3>묶음</h3><div class="grid">${["기출","모의","예상","실기"].map(g=>b({k:"group",v:g},g+" 전체")).join("")}</div>`;
+  h+=`<h3>회차·파트</h3><div class="grid">${DB.parts.map(p=>b({k:"part",v:p.id},p.title)).join("")}</div>`;
+  h+=`<h3>유형</h3><div class="grid">${TYPES.map(t=>b({k:"type",v:t},t)).join("")}</div>`;
+  $("sheet").innerHTML=h;
+  $("sheet").querySelectorAll("button[data-sc]").forEach(x=>x.onclick=()=>setScope(JSON.parse(x.dataset.sc)));
+  $("sheet").classList.add("on");$("sheetBg").classList.add("on")}
+function closeSheet(){$("sheet").classList.remove("on");$("sheetBg").classList.remove("on")}
+function resetAll(){if(!confirm("푼 기록과 오답을 모두 지울까요?"))return;
+  S=load();S.seen=[];S.res={};S.retry=[];S.count=0;S.cur=null;S.scope={k:"all"};save();next()}
+
+/* ---------- 시작 ---------- */
+$("scopeBtn").onclick=openSheet;$("sheetBg").onclick=closeSheet;
+fetch("data/questions.json").then(r=>r.json()).then(d=>{
+  DB=d;d.questions.forEach(q=>BYID[q.id]=q);S=load();
+  S.seen=S.seen.filter(i=>BYID[i]);S.retry=S.retry.filter(r=>BYID[r.id]);
+  if(S.scope.k==="part"&&!DB.parts.some(p=>p.id===S.scope.v))S.scope={k:"all"};
+  if(S.cur&&BYID[S.cur.id])show();else next();
+}).catch(()=>{$("main").innerHTML='<div class="card">문항을 불러오지 못했습니다. 새로고침해 주세요.</div>'});
+</script>
+</body>
+</html>
