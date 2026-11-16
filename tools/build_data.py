@@ -12,7 +12,10 @@ from hs import parse  # noqa: E402
 
 CIRC = "①②③④⑤⑥"
 PAIR = "㉠㉡㉢㉣㉤㉥"
-GROUP = {"g": "기출", "m": "모의", "a": "예상", "b": "예상", "c": "예상", "s": "실기"}
+# 목차 기준: 1~5회 = 기출, 모의1·2 + 105·137·189쪽 문제 = 모의고사, 225쪽 이후 = 단원별 출제 예상
+GROUP = {"g": "기출", "m": "모의", "a": "모의", "b": "모의", "c": "모의", "s": "단원별 출제 예상"}
+TITLE = {"a": "모의 3회", "b": "모의 4회", "c": "모의 5회",
+         "s3d": "3D형상모델링", "scam": "CNC밀링 CAM", "sman": "CNC밀링 매뉴얼 프로그래밍"}
 
 
 def load_trans():
@@ -137,7 +140,7 @@ def main():
             q["ex"] = ex
             out.append(q)
             n += 1
-        parts.append({"id": pid, "title": part["title"], "group": GROUP[pid[0]], "n": n})
+        parts.append({"id": pid, "title": TITLE.get(pid, part["title"]), "group": GROUP[pid[0]], "n": n})
     data = {"parts": parts, "questions": out}
     os.makedirs(os.path.join(Q, "docs", "data"), exist_ok=True)
     json.dump(data, open(os.path.join(Q, "docs", "data", "questions.json"), "w", encoding="utf-8"),

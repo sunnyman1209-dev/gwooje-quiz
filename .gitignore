@@ -1,3 +1,5 @@
 work/
 .cursor-delegate/
 __pycache__/
+
+.taste-skill/

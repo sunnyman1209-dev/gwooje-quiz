@@ -4,32 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#1f6feb">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)">
 <title>기우제반 퀴즈</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
-  --bg:#f5f6f8;--card:#fff;--ink:#1c1f24;--sub:#5d6670;--line:#dfe3e8;
-  --pri:#1f6feb;--pri-ink:#fff;--ok:#1a7f37;--ok-bg:#e7f6ec;--no:#cf222e;--no-bg:#fdecee;
-  --mid:#9a6700;--mid-bg:#fff4d6;--chip:#eef1f5;--box:#f1f5fb;
+  --bg:#f6f4ef;--card:#fff;--ink:#22201c;--sub:#6b665d;--line:#e2ddd3;
+  --pri:#2b2824;--pri-ink:#fff;--ok:#2f7a3b;--ok-bg:#e8f3e6;--no:#c0392b;--no-bg:#fbeae7;
+  --mid:#9a6700;--mid-bg:#fff4d6;--chip:#efebe3;--box:#f3efe7;--tag:#7a4b2a;--tag-bg:#f5e9dc;
+  --ok-solid:#2f7a3b;--fig-filter:none;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#0f1216;--card:#191d23;--ink:#e6e9ee;--sub:#9aa4af;--line:#2c323a;
-  --pri:#4c8dff;--pri-ink:#fff;--ok:#3fb950;--ok-bg:#12291a;--no:#ff6b6b;--no-bg:#331619;
-  --mid:#e3b341;--mid-bg:#2e2510;--chip:#232830;--box:#1b2330;
+  --bg:#151412;--card:#1e1d1a;--ink:#ece8e1;--sub:#a29c92;--line:#34312c;
+  --pri:#ece8e1;--pri-ink:#1a1916;--ok:#6cc070;--ok-bg:#18281a;--no:#ef7a6e;--no-bg:#331a17;
+  --mid:#e3b341;--mid-bg:#2e2510;--chip:#2a2824;--box:#25231f;--tag:#e0b48c;--tag-bg:#33261b;
+  --ok-solid:#2f7a3b;--fig-filter:brightness(.86);
 }}
+.meta .unit-tag{background:var(--tag-bg);color:var(--tag);font-weight:600}
+::selection{background:var(--tag-bg);color:var(--ink)}
+input,textarea{caret-color:var(--tag)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.inp input:focus,.inp textarea:focus{outline:none;border-color:var(--ink)}
+h2{text-wrap:balance}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
-  font-size:17px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
-button{font:inherit;color:inherit}
-header{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 6px;
-  padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:8px}
-.scope{flex:1;min-width:0;display:flex;align-items:center;gap:6px;border:1px solid var(--line);
-  background:var(--card);border-radius:999px;padding:7px 14px;font-size:15px;text-align:left;cursor:pointer}
-.scope b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.scope span{color:var(--sub);margin-left:auto;white-space:nowrap}
-.bar{height:4px;background:var(--line);margin:0 16px;border-radius:2px;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--pri);width:0;transition:width .3s}
+  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-size:17px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;letter-spacing:inherit}
+/* 누름·올림 반응: 손가락에 바로 답한다 */
+.btn,.grid button,.act button,.scope,.sheet-close,.chips button{transition:transform .16s cubic-bezier(.2,.7,.2,1),background-color .16s,border-color .16s,box-shadow .16s}
+@media (hover:hover){
+  .btn:not([disabled]):hover,.grid button:not([disabled]):hover,.scope:hover{transform:translateY(-1px);box-shadow:0 4px 12px -6px rgba(40,30,20,.25)}
+  .act button:not([disabled]):hover{transform:translateY(-1px)}
+}
+.btn:not([disabled]):active,.grid button:not([disabled]):active,.act button:not([disabled]):active,.scope:active,.chips button:active{transform:scale(.98);box-shadow:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px 8px;
+  padding-top:calc(10px + env(safe-area-inset-top))}
+.scope{width:100%;max-width:608px;margin:0 auto;display:flex;align-items:center;gap:12px;border:1px solid var(--line);
+  background:var(--card);border-radius:14px;padding:8px 8px 8px 14px;text-align:left;cursor:pointer;min-height:52px}
+.scope-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.scope-k{font-size:12px;color:var(--sub);font-weight:500}
+.scope b{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scope-go{flex:none;display:flex;align-items:center;gap:4px;background:var(--pri);color:var(--pri-ink);
+  border-radius:10px;padding:8px 10px 8px 12px;font-size:14px;font-weight:600}
+.scope-go svg{width:16px;height:16px}
 main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-inset-bottom))}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px}
 .meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;color:var(--sub)}
@@ -38,7 +59,7 @@ main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-
 .stem{font-size:18px;font-weight:600;white-space:normal}
 .stem table,.md table{border-collapse:collapse;margin:8px 0;font-size:15px;font-weight:400;width:100%}
 .stem td,.stem th,.md td,.md th{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
-.fig{display:block;max-width:100%;margin:12px auto 0;border-radius:8px;background:#fff}
+.fig{display:block;max-width:100%;margin:12px auto 0;border-radius:8px;background:#fff;filter:var(--fig-filter)}
 .figcap{text-align:center;font-size:12px;color:var(--sub);margin-top:4px}
 .ox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .ox button{font-size:30px;font-weight:700;padding:18px 0}
@@ -76,7 +97,8 @@ main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-
 .verdict.no{background:var(--no-bg);color:var(--no)}
 .verdict.mid{background:var(--mid-bg);color:var(--mid)}
 .ex{margin-top:14px;font-size:16px}
-.ex h4{margin:14px 0 4px;font-size:14px;color:var(--sub)}
+.ex h4{margin:20px 0 6px;font-size:15px;font-weight:700;color:var(--ink);padding-bottom:4px;border-bottom:1px solid var(--line)}
+.ex h4:first-child{margin-top:4px}
 .ex ul,.ex ol{margin:4px 0;padding-left:22px}
 .ex li{margin:3px 0}
 .ans{font-size:18px;font-weight:700}
@@ -87,21 +109,37 @@ main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-
 .kw input{width:22px;height:22px;accent-color:var(--pri)}
 .mine{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:15px;white-space:pre-wrap}
 .link{background:none;border:0;color:var(--pri);padding:8px 0;cursor:pointer;font-weight:600}
-.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.9);background:var(--ok);color:#fff;
+.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.9);background:var(--ok-solid);color:#fff;
   font-size:24px;font-weight:800;padding:16px 30px;border-radius:18px;opacity:0;pointer-events:none;transition:all .15s}
 .toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:none}
 .sheet{position:fixed;left:0;right:0;bottom:0;max-height:85vh;overflow:auto;background:var(--card);z-index:11;
   border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));display:none}
 .sheet.on,.sheet-bg.on{display:block}
-.sheet h3{margin:14px 0 8px;font-size:14px;color:var(--sub)}
-.sheet h3:first-child{margin-top:0}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
-.grid button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:10px;text-align:left;cursor:pointer;font-size:15px}
-.grid button small{display:block;color:var(--sub);font-size:12px}
-.grid button.sel{border-color:var(--pri);background:var(--box)}
+.sheet.on{animation:sheetIn .28s cubic-bezier(.2,.8,.2,1)}
+.sheet-bg.on{animation:fadeIn .2s ease-out}
+@keyframes sheetIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:-6px auto 12px}
+.sheet-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sheet-top h2{margin:0;font-size:20px;font-weight:700;letter-spacing:-.02em}
+.sheet-close{display:flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--card);border-radius:10px;
+  padding:8px 12px;font-size:14px;font-weight:600;cursor:pointer;min-height:40px}
+.sheet-close svg{width:16px;height:16px}
+.sheet h3{margin:22px 0 8px;font-size:13px;font-weight:600;color:var(--sub);letter-spacing:0}
+.sheet h3:first-of-type{margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.grid button{position:relative;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 12px 10px;
+  text-align:left;cursor:pointer;font-size:15px;font-weight:600;line-height:1.35;display:flex;flex-direction:column;gap:6px;min-height:68px}
+.grid button small{color:var(--sub);font-size:12px;font-weight:500;margin-top:auto}
+.grid button .ck{position:absolute;top:10px;right:10px;width:18px;height:18px;display:none}
+.grid button.sel{border-color:var(--pri);background:var(--pri);color:var(--pri-ink)}
+.grid button.sel small{color:inherit;opacity:.7}
+.grid button.sel .ck{display:block}
+.grid button.wrong:not(.sel):not([disabled]){background:var(--tag-bg);border-color:transparent;color:var(--tag)}
+.grid button.wrong:not(.sel):not([disabled]) small{color:var(--tag);opacity:.8}
+.grid button[disabled]{opacity:.45;cursor:default}
 .done{text-align:center;padding:30px 10px}
-.done .big{font-size:44px}
 .stats{display:flex;justify-content:center;gap:24px;margin:16px 0;font-size:15px;color:var(--sub)}
 .stats b{display:block;font-size:26px;color:var(--ink)}
 .foot{margin-top:28px;text-align:center;font-size:12px;color:var(--sub)}
@@ -110,9 +148,8 @@ main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-
 </head>
 <body>
 <header>
-  <button class="scope" id="scopeBtn" aria-label="출제 범위 바꾸기"><b id="scopeName">전체</b><span id="prog"></span></button>
+  <button class="scope" id="scopeBtn" aria-label="출제 범위 바꾸기"><span class="scope-txt"><span class="scope-k">출제 범위</span><b id="scopeName">전체</b></span><span class="scope-go">바꾸기<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span></button>
 </header>
-<div class="bar"><i id="barFill"></i></div>
 <main id="main"><div class="card">불러오는 중…</div></main>
 <div class="act" id="act"></div>
 <div class="toast" id="toast">정답!</div>
@@ -121,6 +158,7 @@ main{max-width:640px;margin:0 auto;padding:12px 16px calc(120px + env(safe-area-
 <script>
 "use strict";
 const CIRC="①②③④⑤⑥", PAIR="㉠㉡㉢㉣㉤㉥", KEY="gwq1";
+const CHECK='<svg class="ck" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5l3.2 3L14 5.5"/></svg>';
 let DB=null, BYID={}, Q=null, S=null, view={}, autoNext=0, navLock=false;
 function clearAuto(){if(autoNext){clearTimeout(autoNext);autoNext=0}}
 
@@ -156,8 +194,8 @@ function inScope(q,sc=S.scope){
   return true}
 function pool(){return DB.questions.filter(q=>inScope(q))}
 function scopeName(sc=S.scope){
-  if(sc.k==="part")return DB.parts.find(p=>p.id===sc.v).title;
-  if(sc.k==="group")return sc.v+" 전체";
+  if(sc.k==="part"){const p=DB.parts.find(p=>p.id===sc.v);return (p.group==="단원별 출제 예상"?"단원별 · ":"")+p.title}
+  if(sc.k==="group")return (sc.v==="모의"?"모의고사":sc.v)+" 전체";
   if(sc.k==="type")return sc.v;
   if(sc.k==="wrong")return "오답만";
   return "전체"}
@@ -182,17 +220,14 @@ function next(){
     if(!S.cur){renderDone();return}
     show();
   }finally{navLock=false}}
-function header(){
-  const P=pool(),seen=new Set(S.seen),n=P.filter(q=>seen.has(q.id)).length;
-  $("scopeName").textContent=scopeName();
-  $("prog").textContent=`${S.scope.k==="wrong"?"남은 "+P.filter(q=>!seen.has(q.id)).length:n+" / "+P.length}`;
-  $("barFill").style.width=(P.length?(S.scope.k==="wrong"?0:n/P.length*100):0)+"%"}
+function header(){$("scopeName").textContent=scopeName()}
 
 /* ---------- 문항 화면 ---------- */
 function show(){
   Q=BYID[S.cur.id];view={answered:false,sel:null,match:[]};header();
   const part=DB.parts.find(p=>p.id===Q.p);
-  let h=`<div class="card"><div class="meta"><span>${esc(part.title)}</span><span>${esc(Q.t)}</span>${S.cur.re?'<span class="re">다시 풀기</span>':""}</div>`;
+  const tag=part.group==="단원별 출제 예상"?`<span class="unit-tag">단원별 출제 예상 · ${esc(part.title)}</span>`:`<span>${esc(part.title)}</span>`;
+  let h=`<div class="card"><div class="meta">${tag}<span>${esc(Q.t)}</span>${S.cur.re?'<span class="re">다시 풀기</span>':""}</div>`;
   h+=`<div class="stem">${md(Q.stem)}</div>`;
   if(Q.fig)h+=`<a href="${esc(Q.fig)}" target="_blank" rel="noopener"><img class="fig" src="${esc(Q.fig)}" alt="원본 문항 그림"></a><div class="figcap">원본 문항 · 누르면 크게 보기</div>`;
   h+=`<div id="ui"></div><div id="fb"></div></div>`;
@@ -317,8 +352,8 @@ function renderFeedback(g,opt){
 function renderDone(){
   header();const P=pool(),o=P.filter(q=>S.res[q.id]==="o").length;
   const wrong=DB.questions.filter(q=>S.res[q.id]&&S.res[q.id]!=="o").length;
-  $("main").innerHTML=S.scope.k==="wrong"?`<div class="card done"><div class="big">🎉</div><h2>오답을 모두 다시 풀었습니다</h2><p>남은 오답 ${wrong}문항</p></div>`:
-    `<div class="card done"><div class="big">🎉</div><h2>${esc(scopeName())} 한 바퀴 완료</h2>
+  $("main").innerHTML=S.scope.k==="wrong"?`<div class="card done"><h2>오답을 모두 다시 풀었습니다</h2><p>남은 오답 ${wrong}문항</p></div>`:
+    `<div class="card done"><h2>${esc(scopeName())} 한 바퀴 완료</h2>
     <div class="stats"><div><b>${P.length}</b>문항</div><div><b>${o}</b>맞음</div><div><b>${P.length-o}</b>틀림·△</div></div></div>`;
   const acts=[{t:"다시 한 바퀴",f:()=>{const ids=new Set(P.map(q=>q.id));S.seen=S.seen.filter(i=>!ids.has(i));S.round++;save();next()}}];
   if(wrong&&S.scope.k!=="wrong")acts.push({t:`오답만 (${wrong})`,g:1,f:()=>setScope({k:"wrong"})});
@@ -334,13 +369,18 @@ function setScope(sc){
 function openSheet(){
   const cnt=sc=>DB.questions.filter(q=>inScope(q,sc)).length;
   const b=(sc,label)=>{const n=cnt(sc);const on=JSON.stringify(sc)===JSON.stringify(S.scope);
-    return `<button type="button" class="${on?"sel":""}" data-sc='${esc(JSON.stringify(sc))}' ${n?"":"disabled"}>${esc(label)}<small>${n}문항</small></button>`};
-  let h=`<h3>전체</h3><div class="grid">${b({k:"all"},"전체")}${b({k:"wrong"},"오답만")}</div>`;
-  h+=`<h3>묶음</h3><div class="grid">${["기출","모의","예상","실기"].map(g=>b({k:"group",v:g},g+" 전체")).join("")}</div>`;
-  h+=`<h3>회차·파트</h3><div class="grid">${DB.parts.map(p=>b({k:"part",v:p.id},p.title)).join("")}</div>`;
+    const cls=[on?"sel":"",sc.k==="wrong"?"wrong":""].join(" ").trim();
+    return `<button type="button" class="${cls}" data-sc='${esc(JSON.stringify(sc))}' ${n?"":"disabled"} ${on?'aria-current="true"':""}><span>${esc(label)}</span><small>${n}문항</small>${CHECK}</button>`};
+  let h=`<div class="grab"></div><div class="sheet-top"><h2>출제 범위</h2><button type="button" class="sheet-close" id="sheetClose">닫기<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>`;
+  h+=`<h3>처음부터 · 틀린 문제</h3><div class="grid">${b({k:"all"},"전체")}${b({k:"wrong"},"오답만")}</div>`;
+  h+=`<h3>묶음</h3><div class="grid">${b({k:"group",v:"기출"},"기출 전체")}${b({k:"group",v:"모의"},"모의고사 전체")}${b({k:"group",v:"단원별 출제 예상"},"단원별 출제 예상 전체")}</div>`;
+  h+=`<h3>기출 회차</h3><div class="grid">${DB.parts.filter(p=>p.group==="기출").map(p=>b({k:"part",v:p.id},p.title)).join("")}</div>`;
+  h+=`<h3>모의고사 회차</h3><div class="grid">${DB.parts.filter(p=>p.group==="모의").map(p=>b({k:"part",v:p.id},p.title)).join("")}</div>`;
+  h+=`<h3>단원별 출제 예상</h3><div class="grid">${DB.parts.filter(p=>p.group==="단원별 출제 예상").map(p=>b({k:"part",v:p.id},p.title)).join("")}</div>`;
   h+=`<h3>유형</h3><div class="grid">${TYPES.map(t=>b({k:"type",v:t},t)).join("")}</div>`;
   $("sheet").innerHTML=h;$("sheet").setAttribute("role","dialog");$("sheet").setAttribute("aria-label","출제 범위");
   $("sheet").querySelectorAll("button[data-sc]").forEach(x=>x.onclick=()=>setScope(JSON.parse(x.dataset.sc)));
+  $("sheetClose").onclick=closeSheet;
   $("sheet").classList.add("on");$("sheetBg").classList.add("on")}
 function closeSheet(){$("sheet").classList.remove("on");$("sheetBg").classList.remove("on")}
 function resetAll(){if(!confirm("푼 기록과 오답을 모두 지울까요?"))return;
@@ -349,10 +389,12 @@ function resetAll(){if(!confirm("푼 기록과 오답을 모두 지울까요?"))
 
 /* ---------- 시작 ---------- */
 $("scopeBtn").onclick=openSheet;$("sheetBg").onclick=closeSheet;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("on"))closeSheet()});
 fetch("data/questions.json").then(r=>r.json()).then(d=>{
   DB=d;d.questions.forEach(q=>BYID[q.id]=q);S=load();
   S.seen=S.seen.filter(i=>BYID[i]);S.retry=S.retry.filter(r=>BYID[r.id]);
   if(S.scope.k==="part"&&!DB.parts.some(p=>p.id===S.scope.v))S.scope={k:"all"};
+  if(S.scope.k==="group"&&!DB.parts.some(p=>p.group===S.scope.v))S.scope={k:"all"}; // 옛 묶음 이름(예상·실기) 정리
   if(S.cur&&BYID[S.cur.id])show();else next();
 }).catch(()=>{$("main").innerHTML='<div class="card">문항을 불러오지 못했습니다. 새로고침해 주세요.</div>'});
 </script>
